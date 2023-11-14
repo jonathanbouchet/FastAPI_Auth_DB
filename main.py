@@ -21,7 +21,7 @@ def get_db():
 
 
 # app routes
-app = FastAPI(title="sqlalchemy + fastapi", description="a basic user DB example")
+app = FastAPI(title="Auth + sqlalchemy + fastapi", description="a basic user DB example")
 
 
 @app.get("/", tags=["health check"])
@@ -47,7 +47,7 @@ async def check_username(username: str) -> bool:
     return any(user.username == username for user in users)
 
 
-@app.post("/user", tags=["user"], description="register a new user in DB")
+@app.post("/register", tags=["users"], description="register a new user in DB")
 async def register(auth_details: AuthDetails, db: Session = Depends(get_db)):
     # check DB if username already taken
     print("starts registering new user")
@@ -71,7 +71,7 @@ async def register(auth_details: AuthDetails, db: Session = Depends(get_db)):
     return HTTPException(status_code=status.HTTP_200_OK, detail=f"new user created: {db_user}")
 
 
-@app.post('/login', tags=["users"], description="login an existed user form database and issued a JWT token")
+@app.post("/login", tags=["users"], description="login an existed user form database and issued a JWT token")
 async def login(auth_details: AuthDetails):
     user = None
     users = await get_users_from_db()
@@ -87,7 +87,7 @@ async def login(auth_details: AuthDetails):
     return {"token": token}
 
 
-@app.get("/get_user_protected", tags=["user"], description="list all users in DB, unprotected route")
+@app.get("/get_user_protected", tags=["users"], description="list all users in DB, unprotected route")
 async def get_users(username=Depends(auth_handler.auth_wrapper)):
     users = await get_users_from_db()
     print(f"users from DB:{users}")
@@ -97,7 +97,7 @@ async def get_users(username=Depends(auth_handler.auth_wrapper)):
     }
 
 
-@app.get("/get_user_unprotected", tags=["user"], description="list all users in DB, unprotected route")
+@app.get("/get_user_unprotected", tags=["users"], description="list all users in DB, unprotected route")
 async def get_users():
     users = await get_users_from_db()
     print(f"users from DB:{users}")
